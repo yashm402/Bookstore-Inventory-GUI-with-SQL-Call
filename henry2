@@ -10,46 +10,48 @@ myFont = ("Arial", 16, "bold")
 
 
 def comboCallAuthor(event):
-    global myList
+    global myList, A_List
         # get will get its value - note that this is always a string
     selIndex = event.widget.current()
-    author = myList(selIndex)
+    print(selIndex)
+    author = myList[selIndex]
     #combobox2
-    A_List = HenrySBA().searchAuthor()[selIndex]
-    print("Selected Author", author[0])
+    A_List = HenrySBA().searchBook(author[0])
+    print(A_List)
     combobox2['values'] = A_List
-    return A_List
-    #.book_choice = .combobox2.bind("<<ComboboxSelected>>", .combo2)
-        # return .author[0]
-        # myList2 = backend.henryDB().getTitle(.author)
-        # com2['values'] = myList2
-        # print("Index selected is: " + str(selIndex))
-        # print(selIndex)
-        # return myList2
+    # print(A_List)
+    # return A_List
+    book_choice = combobox2.bind("<<ComboboxSelected>>", comboCallTitleAut)
+    #     return .author[0]
+    #     myList2 = backend.henryDB().getTitle(.author)
+    #     com2['values'] = myList2
+    #     print("Index selected is: " + str(selIndex))
+    #     print(selIndex)
+    #     return myList2
 
-def comboCallTitle(event):
-
+def comboCallTitleAut(event):
     selIndex2 = event.widget.current()
-    print(selIndex2)
     #getting selection from combobox to populate the tree
-    title = myList[selIndex2]
-    print("Book Title: ", title)
+    title = A_List[selIndex2]
+    # print("Book Title: ", title)
     branch_names = HenryDOA.HenrySBA().branch_info(title)
-    combobox2['values'] = branch_names
+    # combobox2['values'] = branch_names
     for i in tree1.get_children():  # Remove any old values in tree list
          tree1.delete(i)
-    i = 0
-    for row in branch_names:
-        tree1.insert("", "end", values=[branch_names[0], branch_names[1], branch_names[2]])
+
+    for i in range(len(HenryDOA.HenrySBA().branch_info(title))):
+        vals = branch_names[i]
+
+        # print(vals)
+        tree1.insert("", "end", values=[vals[0], vals[1], vals[2]])
 
 
-root = tk.Tk()
 
-root.mainloop()
+
 
 
 # main window
-
+root = tk.Tk()
 root.title('Henry Bookstore')
 
 # create a notebook
@@ -103,7 +105,7 @@ myList = HenrySBA().searchAuthor()
 #Values in the dropdown meny obrained from the SQL code in search author function in DOA
 combobox1['values'] = myList
 combobox1.current(0)
-combobox1.bind(("<<ComboboxSelected>>", comboCallAuthor()))
+combobox1.bind("<<ComboboxSelected>>", comboCallAuthor)
 
 
 #Title Combobox SBA
@@ -111,7 +113,7 @@ combobox1.bind(("<<ComboboxSelected>>", comboCallAuthor()))
 combobox2 = ttk.Combobox(tab1, width=20, state="readonly", font = myFont)
 combobox2.grid(column=6, row=30, padx=30)
 T_List = []
-combobox2.bind("<<ComboboxSelected>>", comboCallTitle())
+# combobox2.bind("<<ComboboxSelected>>", comboCallTitlePub)
 
 ###AUTHOR TAB END)
 
@@ -130,7 +132,7 @@ def comboCallPub(event):
     return pubList
 
 #retreive book info (same as above)
-def comboCallTitle(event):
+def comboCallTitlePub(event):
 
     pubIndex2 = event.widget.current()
     #getting selection from combobox to populate the tree
@@ -138,11 +140,11 @@ def comboCallTitle(event):
     print("Book Title: ", title)
     branch_names = HenryDOA.HenrySBA().branch_info(title)
     pubComboBox2['values'] = branch_names
-    for i in tree2.get_children():  # Remove any old values in tree list
-         tree2.delete(i)
-    i = 0
-    for row in branch_names:
-        tree2.insert("", "end", values=[branch_names[0], branch_names[1], branch_names[2]])
+    # for i in tree2.get_children():  # Remove any old values in tree list
+    #      tree2.delete(i)
+    # i = 0
+    # for row in branch_names:
+    #     tree2.insert("", "end", values=[branch_names[0], branch_names[1], branch_names[2]])
 
 #Tree creation in publisher tab(2)
 tree2 = ttk.Treeview(tab2, columns=('Branch', 'Copies', 'Price'), show='headings')
@@ -160,17 +162,17 @@ pubLabel['text'] = "Publisher Selection:"
 
 pubComboBox = ttk.Combobox(tab2, width = 20, state="readonly")
 pubComboBox.grid(column=0, row=5)
-pubList = HenryDOA.HenrySBA().PubName()
-pubComboBox['values'] = pubList
+pubList2 = HenryDOA.HenrySBA().PubName("Tor Books")
+pubComboBox['values'] = pubList2
 pubComboBox.current(0)
-pubComboBox.bind("<<ComboboxSelected>>", comboCallPub())
+pubComboBox.bind("<<ComboboxSelected>>", comboCallPub)
 
 #pub combobox 2 to get book title
 
-pubList2 = []
+pubList = []
 pubComboBox2 = ttk.Combobox(tab2, width = 20, state="readonly")
 pubComboBox2.grid(column=0, row=5)
-pubComboBox2.bind("<<ComboboxSelected>>", comboCallTitle())
+# pubComboBox2.bind("<<ComboboxSelected>>", comboCallTitle)
 
 
 ###PUBLISHER TAB END)
@@ -188,20 +190,19 @@ def comboCallCat(event):
     catComboBox2['values'] = catList
     return catList
 
-def comboCallTitle(event):
-
+def comboCallTitleCat(event):
     catIndex2 = event.widget.current()
     #getting selection from combobox to populate the tree
     title = catList[catIndex2]
     print("Book Title: ", title)
-    branch_names = HenryDOA.HenrySBA().branch_info(title)
-    catComboBox2['values'] = branch_names
-    for i in tree3.get_children():  # Remove any old values in tree list
-         tree3.delete(i)
-    i = 0
-    for row in branch_names:
-        tree3.insert("", "end", values=[branch_names[0], branch_names[1], branch_names[2]])
-        i= i+1
+    # branch_names = HenryDOA.HenrySBA().branch_info(title)
+    # catComboBox2['values'] = branch_names
+    # for i in tree3.get_children():  # Remove any old values in tree list
+    #      tree3.delete(i)
+    # i = 0
+    # for row in branch_names:
+    #     tree3.insert("", "end", values=[branch_names[0], branch_names[1], branch_names[2]])
+    #     i= i+1
 
 #Tree Creation for category tab
 tree3 = ttk.Treeview(tab3, columns=('Branch', 'Copies', 'Price'), show='headings')
@@ -219,120 +220,20 @@ catLabel['text'] = "Category Selection:"
 
 catComboBox = ttk.Combobox(tab3, width = 20, state="readonly")
 catComboBox.grid(column=0, row=5)
-catList2 = HenryDOA.HenrySBA().CatName()
-catComboBox['values'] = pubList
-catComboBox.current(0)
-catComboBox.bind("<<ComboboxSelected>>", comboCallCat())
+# catList2 = HenryDOA.HenrySBA().CatName(category)
+# catComboBox['values'] = pubList
+# catComboBox.current(0)
+# catComboBox.bind("<<ComboboxSelected>>", comboCallCat)
 
 #cat combobox 2 to get book title
 
 catList = []
 catComboBox2 = ttk.Combobox(tab3, width = 20, state="readonly")
 catComboBox2.grid(column=0, row=5)
-catComboBox2.bind("<<ComboboxSelected>>", comboCallTitle())
-
-#author_select = combobox1.bind("<<ComboboxSelected>>", comboCallAuthor())
-
-#Book Title Combobox
+catComboBox2.bind("<<ComboboxSelected>>", comboCallTitleCat)
 
 
-
-        # .combobox2['values'] = HenrySBA().searchBook(.author)
-        #
-        #.combobox2.bind("<<ComboboxSelected>>", .combo2)
-
-
-        # for i in .tree1.get_children():  # Remove any old values in tree list
-        #     .tree1.delete(i)
-        #
-        # for row in myList:
-        #     .tree1.insert("", "end", values=[row, "Name Unknown"])
-
-
-    # Book Combobox SBA
-
-
-
-        #print(.book_selected[0])
-        #.comboCall2()
-        #return
-        # print(.author)
-        # .combobox2['values'] = HenrySBA().searchBook(.author)
-        #print(HenrySBA().searchAuthor()[event.widget.current()])     ***Send to SQL for next query search
-
-# def comboCall2(, event):
-#     selIndex3 = event.widget.current()
-#     .inventory = HenrySBA().book_info()[selIndex3]
-
- # ##Need branch number and
-
-# selIndex = event.widget.current()
-# print("Index selected is: " + str(selIndex))
-
-"""Labels in SBC"""
-        # .label1 = ttk.Label(.tab2)
-        # .label1.grid(column=3, row=3)
-        # .label1['text'] = " Selection:"
-#root.mainloop()
-
-
-
-
-# class HenrySBA():
-#
-#     def __init__():
-#         .mydb = mysql.connector.connect(
-#             user='root',
-#             passwd='Atlanta91',
-#             database='henry',
-#             host='127.0.0.1')
-#
-#         .mycur = .mydb.cursor()
-#
-#     def searchAuthor():
-#
-#         #perform this query
-#         sql = "SELECT * FROM henry_author"
-#         .mycur.execute(sql)
-#
-#         .author_list = []
-#         for row in .mycur:
-#             # .author_id = row[0]
-#             # .last_name = row[1]
-#             # .first_name = row[2]
-#             .author_list.append([row[1]])
-#             # print("AuthorID: " + str(.author_id) + ", name " + .first_name +" " + .last_name)
-#
-#         return (.author_list)
-#
-#     def searchBook(, author):
-#         sql = "SELECT book.TITLE " \
-#               "FROM henry_author as author " \
-#               "JOIN henry_wrote as wrote " \
-#               "ON author.AUTHOR_NUM = wrote.AUTHOR_NUM " \
-#               "JOIN henry_book as book " \
-#               "ON wrote.BOOK_CODE = book.BOOK_CODE " \
-#               "WHERE author.AUTHOR_LAST = '" + author + "'" \
-#
-#         #"WHERE author.AUTHOR_LAST = 'Morrison';"
-#         .mycur.execute(sql)
-#
-#         .book_list = []
-#
-#         for row in .mycur:
-#             .book_list.append(row)
-#
-#         return (.book_list)
-#
-
-
-
-# print(HenrySBA().searchAuthor())
-# setup = GUIsetup()
-# setup.create()
-# author = HenrySBA()
-# author.searchAuthor()
-
+root.mainloop()
 
 
 ###*Worked with classmate Duncan , Andy, and Danny*
