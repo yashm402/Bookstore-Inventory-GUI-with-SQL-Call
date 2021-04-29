@@ -1,0 +1,140 @@
+import mysql.connector
+
+class HenrySBA():
+
+    def __init__(self):
+        self.mydb = mysql.connector.connect(
+            user='root',
+            passwd='Atlanta91',
+            database='henry',
+            host='127.0.0.1')
+
+        self.mycur = self.mydb.cursor()
+
+    def close(self):
+        self.mydb.commit()
+        self.mydb.close()
+
+    def searchAuthor(self):
+
+        #perform this query
+        sql = "SELECT * FROM henry_author"
+        self.mycur.execute(sql)
+
+        author_list = []
+        for row in self.mycur:
+            # self.author_id = row[0]
+            # self.last_name = row[1]
+            # self.first_name = row[2]
+            author_list.append([row[1]])
+            # print("AuthorID: " + str(self.author_id) + ", name " + self.first_name +" " + self.last_name)
+        return (author_list)
+
+    def searchBook(self, author):
+        self.author = author
+        sql = "SELECT book.TITLE " \
+              "FROM henry_author as author " \
+              "JOIN henry_wrote as wrote " \
+              "ON author.AUTHOR_NUM = wrote.AUTHOR_NUM " \
+              "JOIN henry_book as book " \
+              "ON wrote.BOOK_CODE = book.BOOK_CODE " \
+              "WHERE author.AUTHOR_LAST = '" + self.author[0] + "'"
+
+        #"WHERE author.AUTHOR_LAST = 'Morrison';"
+        self.mycur.execute(sql)
+
+        book_list = []
+
+        for row in self.mycur:
+            book_title= row
+            book_list.append(book_title)
+
+        return (book_list)
+
+
+
+#gets branch info/inventory/price to feed to tree
+    def branch_info(self, title):
+
+        #self.book_specs = specs
+        sql = "SELECT branch.BRANCH_NAME, inventory.ON_HAND, book.PRICE " \
+             "FROM henry_book as book " \
+             "JOIN henry_inventory as inventory " \
+             "ON book.BOOK_CODE = inventory.BOOK_CODE " \
+             "JOIN henry_branch as branch " \
+             "ON inventory.BRANCH_NUM = branch.BRANCH_NUM " \
+             "WHERE book.TITLE = '" + title + "'"
+
+        inventory = []
+        self.mycur.execute(sql)
+        for row in self.mycur:
+            #self.inventory.append([row[0]. row[1], row[2]])
+            BRANCH_NAME = row[0]
+            ON_HAND = float(row[1])
+            PRICE = float(row[2])
+            inventory.append(BRANCH_NAME, ON_HAND, PRICE)
+
+        print (inventory)
+        return (inventory)
+
+#Publisher tab queries
+
+    def searchPublisher(self):
+
+        sql = "SELECT PUBLISHER_CODE, PUBLISHER_NAME FROM henry_publisher";
+        self.mycur.execute(sql);
+        pub_list = []
+
+        for row in self.mycur:
+            PUBLISHER_CODE = row[0]
+            PUBLISHER_NAME = row[1]
+            pub_list.append(PUBLISHER_NAME)
+    #    print(pub_list)
+        return (pub_list)
+
+    def PubName(self, publisher):
+        sql = "SELECT book.TITLE " \
+              "FROM henry_publisher as publisher " \
+              "JOIN henry_book as book " \
+               "ON publisher.PUBLISHER_CODE = book.PUBLISHER_CODE " \
+               "WHERE PUBLISHER_NAME = '" + publisher + "'"
+
+        pList = []
+        self.mycur.execute(sql);
+
+        for row in self.mycur:
+            book_title = row[0]
+            pList.append(book_title)
+
+        print(pList)
+        return (pList)
+
+#Category tab queries
+
+    def searchCategory(self):
+        sql = "SELECT DISTINCT TYPE FROM henry_book;"
+        self.mycur.execute(sql);
+        cat_list = []
+        for row in self.mycur:
+            BOOK_TYPE = row[0]
+            cat_list.append(BOOK_TYPE)
+        print(cat_list)
+        return (cat_list)
+
+    def CatName(self, category):
+        sql = "SELECT book.TITLE, book.TYPE " \
+              "FROM henry_book as book " \
+              "WHERE book.TYPE = '" + category + "'"
+        self.mycur.execute(sql);
+        cList = []
+        for row in self.mycur:
+            book_title = row[0]
+            cList.append(book_title)
+
+        print(cList)
+        return (cList)
+
+
+doa = HenrySBA
+doa.close()
+
