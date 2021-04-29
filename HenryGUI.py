@@ -3,22 +3,23 @@ from tkinter import ttk
 import mysql.connector
 from HenryDOA import HenrySBA
 
+myFont = ("Arial", 16, "bold")
 class GUIsetup():
 
+#created tkinter window
     def __init__(self):
         self.root = tk.Tk()
         self.create()
         self.root.mainloop()
+        #self.comboCall2()
 
 
 
 # main window
     def create(self):
-        #self.root = tk.Tk()
-        #self.root.geometry('400x500')
+
         self.root.title('Henry Bookstore')
-        # selIndex = event.widget.current()
-        # print("Index selected is: " + str(selIndex))
+
 
 # create a notebook
         self.notebook = ttk.Notebook(self.root)
@@ -50,18 +51,18 @@ class GUIsetup():
         self.label2.grid(column=6, row=3, pady =2, padx = 30)
         self.label2['text'] = "Book Selection:"
 
-        self.label3 = ttk.Label(self.tab1)
-        self.label3.grid(column=9, row=3)
-        self.label3['text'] = "Price in USD:"
+        # self.label3 = ttk.Label(self.tab1)
+        # self.label3.grid(column=9, row=3)
+        # self.label3['text'] = "Price in USD:"
 
 # Author Combobox SBA
 
-        self.combobox1 = ttk.Combobox(self.tab1, width=20, state="readonly")
+        self.combobox1 = ttk.Combobox(self.tab1, width=20, state="readonly", font = myFont)
         self.combobox1.grid(column=3, row=30, padx= 25)
-       
+        #Values in the dropdown meny obrained from the SQL code in search author function in DOA
         self.combobox1['values'] = HenrySBA().searchAuthor()
         # self.combobox1.current(0)
-        self.combobox2 = ttk.Combobox(self.tab1, width=20, state="readonly")
+        self.combobox2 = ttk.Combobox(self.tab1, width=20, state="readonly", font = myFont)
         self.combobox2.grid(column=6, row=30, padx=30)
         self.author_select = self.combobox1.bind("<<ComboboxSelected>>", self.comboCall)
 
@@ -72,13 +73,18 @@ class GUIsetup():
         #self.combobox2.bind("<<ComboboxSelected>>", self.combo2)
 
 # Creating a Tree
-        self.tree1 = ttk.Treeview(self.tab1, columns=('Branch', 'Copies'), show='headings')
+        self.tree1 = ttk.Treeview(self.tab1, columns=('Branch', 'Copies', 'Price'), show='headings')
         self.tree1.heading('Branch', text='Branch Name')
         self.tree1.heading('Copies', text='Copies Available')
+        self.tree1.heading('Price', text='Price')
         self.tree1.grid(column=1, row=1)
 
-        # selIndex = event.widget.current()
-        # print("Index selected is: " + str(selIndex))
+        # for i in self.tree1.get_children():  # Remove any old values in tree list
+        #     self.tree1.delete(i)
+        #
+        # for row in myList:
+        #     self.tree1.insert("", "end", values=[row, "Name Unknown"])
+
 
     # Book Combobox SBA
     def comboCall(self,event):
@@ -87,7 +93,7 @@ class GUIsetup():
         self.author = HenrySBA().searchAuthor()[selIndex]
         print("Selected Author", self.author[0])
         self.combobox2['values'] = HenrySBA().searchBook(self.author)
-        self.book_choise = self.combobox2.bind("<<ComboboxSelected>>", self.combo2)
+        self.book_choice = self.combobox2.bind("<<ComboboxSelected>>", self.combo2)
         # return self.author[0]
         # myList2 = backend.henryDB().getTitle(self.author)
         # com2['values'] = myList2
@@ -103,17 +109,22 @@ class GUIsetup():
 
 
         print(self.book_selected[0])
-        return
+        #self.comboCall2()
+        #return
         # print(self.author)
         # self.combobox2['values'] = HenrySBA().searchBook(self.author)
         #print(HenrySBA().searchAuthor()[event.widget.current()])     ***Send to SQL for next query search
 
- ##Need branch number and
+    #def comboCall2(self, event):
+        selIndex3 = event.widget.current()
+        self.inventory = HenrySBA().searchAuthor()[selIndex3]
+ #
+ # ##Need branch number and
 
 # selIndex = event.widget.current()
 # print("Index selected is: " + str(selIndex))
 
-        """Labels in SBC"""
+"""Labels in SBC"""
         # self.label1 = ttk.Label(self.tab2)
         # self.label1.grid(column=3, row=3)
         # self.label1['text'] = " Selection:"
