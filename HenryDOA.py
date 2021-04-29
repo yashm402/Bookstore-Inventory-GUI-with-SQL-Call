@@ -46,6 +46,23 @@ class HenrySBA():
 
         return (self.book_list)
 
+    def book_info(self, specs):
+        self.book_specs = specs
+        "SELECT branch.BRANCH_NAME, inventory.ON_HAND, book.PRICE " \
+        "FROM henry_book as book " \
+        "JOIN henry_inventory as inventory " \
+        "ON book.BOOK_CODE = inventory.BOOK_CODE " \
+        "JOIN henry_branch as branch " \
+        "ON inventory.BRANCH_NUM = branch.BRANCH_NUM " \
+        "WHERE book.TITLE = '" + self.specs[0] + "'"
+
+        self.inventory = []
+
+        for row in self.mycur:
+            self.inventory.append([row[0]. row[1], row[2]])
+
+        print (self.inventory)
+        return (self.inventory)
 #class HenrySBP():
 
 #class HenrySPC():
